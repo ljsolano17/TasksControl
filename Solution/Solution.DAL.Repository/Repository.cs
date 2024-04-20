@@ -25,7 +25,7 @@ namespace Solution.DAL.Repository
             {
                 throw ex;
             }
-            
+
         }
 
         public void Delete(T entity)
@@ -34,7 +34,8 @@ namespace Solution.DAL.Repository
             {
                 dbContext.Entry<T>(entity).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -68,7 +69,7 @@ namespace Solution.DAL.Repository
         {
             try
             {
-                if(dbContext.Entry<T>(entity).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+                if (dbContext.Entry<T>(entity).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
                 {
                     dbContext.Entry<T>(entity).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                 }
@@ -87,7 +88,10 @@ namespace Solution.DAL.Repository
         {
             try
             {
-                dbContext.Entry<T>(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+             dbContext.Entry<T>(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+               
+                
             }
             catch (Exception ex)
             {

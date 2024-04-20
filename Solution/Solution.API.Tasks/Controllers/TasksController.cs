@@ -12,7 +12,7 @@ namespace Solution.API.Tasks.Controllers
     public class TasksController : ControllerBase
     {
         private SolutionDbContext _context;
-        public TasksController(SolutionDbContext context) 
+        public TasksController(SolutionDbContext context)
         {
             this._context = context;
         }
@@ -20,32 +20,106 @@ namespace Solution.API.Tasks.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<data.Tasks>>> GetAll()
         {
-            return  new BS.Tasks(_context).GetAll().ToList();
+            try
+            {
+                return new BS.Tasks(_context).GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         // GET api/<TasksController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<data.Tasks>> GetById(int id)
         {
-            return "value";
+            try
+            {
+                return new BS.Tasks(_context).GetById(id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         // POST api/<TasksController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<data.Tasks>> Post([FromBody] data.Tasks tasks)
         {
+            try
+            {
+                if (tasks == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
+                }
+                else
+                {
+                    new BS.Tasks(_context).Insert(tasks);
+                    return CreatedAtAction("GetAll", new { taskId = tasks.TaskId }, tasks);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         // PUT api/<TasksController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<data.Tasks>> Put(int id, [FromBody] data.Tasks tasks)
         {
+            try
+            {
+                if (id != null && tasks != null)
+                {
+                    new BS.Tasks(_context).Update(tasks);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!TaskExists(id))
+                {
+                    return NotFound();
+                }
+                return StatusCode(500, ex.Message);
+            }
+
+            return NoContent();
         }
 
         // DELETE api/<TasksController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<data.Tasks>> Delete(int id)
         {
+            try
+            {
+                var task = new BS.Tasks(_context).GetById(id);
+                if (task != null)
+                {
+                    new BS.Tasks(_context).Delete(task);
+                    return StatusCode(200, task);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            return NoContent();
+        }
+
+        private bool TaskExists(int id)
+        {
+            return (new BS.Tasks(_context).GetById(id) != null);
         }
     }
 }

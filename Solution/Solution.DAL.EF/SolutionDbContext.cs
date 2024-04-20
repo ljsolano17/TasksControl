@@ -21,6 +21,8 @@ namespace Solution.DAL.EF
         {
             modelBuilder.Entity<Tasks>(entity =>
             {
+                entity.HasKey(e=>e.TaskId).HasName("PK__Tasks");
+                
                 entity.Property(e => e.Description).HasMaxLength(255);
                 entity.Property(e => e.DueDate).HasColumnType("datetime");
                 entity.Property(e => e.IsCompleted).HasDefaultValueSql("((0))");
